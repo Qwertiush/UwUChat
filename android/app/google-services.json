@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "804283490761",
+    "project_id": "uwuchat-24d3b",
+    "storage_bucket": "uwuchat-24d3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804283490761:android:638dabf53f2c84dec50818",
+        "android_client_info": {
+          "package_name": "com.example.uwuchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804283490761-5lge03fm7el19r8bdojsaffavkms72g6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrWWYtX-1l8yjISmUMSN81S-pOXnsueQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804283490761-5lge03fm7el19r8bdojsaffavkms72g6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "804283490761-camc15qmo9jn0jo1g6l3d0j3cfimhl5j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.messanger"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
