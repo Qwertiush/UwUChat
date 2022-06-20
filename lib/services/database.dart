@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DataBaseMethods{
@@ -36,11 +38,12 @@ class DataBaseMethods{
         .doc(chatRoomId)
         .collection("Chat")
         .orderBy("time", descending: true)
+        .limit(25)
         .snapshots();
   }
 
-  getChatRooms(String userName) async{
+  getChatRooms(String userEmail) async{
     return await FirebaseFirestore.instance.collection("ChatRoom")
-        .where("users", arrayContains: userName).snapshots();
+        .where("users", arrayContains: userEmail).snapshots();
   }
 }

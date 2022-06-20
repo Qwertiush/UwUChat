@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:uwuchat/helper/authenticate.dart';
 import 'package:uwuchat/helper/helperfunctions.dart';
 import 'package:uwuchat/services/auth.dart';
 import 'package:uwuchat/services/database.dart';
@@ -25,11 +26,12 @@ class _SignUpState extends State<SignUp> {
   DataBaseMethods dataBaseMethods = DataBaseMethods();
 
   final formKey = GlobalKey<FormState>();
-  TextEditingController userNameTextEdditingController = new TextEditingController();
-  TextEditingController emailTextEdditingController = new TextEditingController();
-  TextEditingController passwordTextEdditingController = new TextEditingController();
+  TextEditingController userNameTextEdditingController = TextEditingController();
+  TextEditingController emailTextEdditingController =TextEditingController();
+  TextEditingController passwordTextEdditingController = TextEditingController();
 
-  signMeUp(){
+  signMeUp() async{
+
     if(formKey.currentState!.validate()){
 
       Map<String, String> userInfoMap = {
@@ -47,12 +49,18 @@ class _SignUpState extends State<SignUp> {
       authMethods.signUpWithEmailAndPassword(emailTextEdditingController.text, passwordTextEdditingController.text)
       .then((value){
         print("${value.hashCode}");
-
-        dataBaseMethods.uploadUserInfo(userInfoMap);
-        HelperFunctions.saveUserLoggedInSharedPreference(true);
-        Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) => ChatRoom()
-        ));
+        if(value != null) {
+          dataBaseMethods.uploadUserInfo(userInfoMap);
+          HelperFunctions.saveUserLoggedInSharedPreference(true);
+          Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) => ChatRoom()
+          ));
+        }
+        else{
+          Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) => Authenticate()
+          ));
+        }
       });
     }
   }

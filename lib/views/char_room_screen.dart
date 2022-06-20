@@ -4,6 +4,7 @@ import 'package:uwuchat/constants/app_colors.dart';
 import 'package:uwuchat/helper/authenticate.dart';
 import 'package:uwuchat/helper/constants.dart';
 import 'package:uwuchat/helper/helperfunctions.dart';
+import 'package:uwuchat/notifications/notification_api.dart';
 import 'package:uwuchat/services/auth.dart';
 import 'package:uwuchat/services/database.dart';
 import 'package:uwuchat/views/char_room_screen.dart';
@@ -27,7 +28,7 @@ class _ChatRoomState extends State<ChatRoom> {
   late final Stream<QuerySnapshot> chatRoomsStream;
 
   Widget chatRoomList(){
-    String myChatroomId =  Constants.myName+"_"+Constants.myName;
+    String myChatroomId =  Constants.myEmail+"_"+Constants.myEmail;
     try {
       return StreamBuilder<QuerySnapshot>(
         stream: chatRoomsStream,
@@ -48,6 +49,7 @@ class _ChatRoomState extends State<ChatRoom> {
                 return ChatRoomTile(
                     "Just You",
                     data['chatroomid'],
+                    "last message"
                 );
               }
               else{
@@ -55,8 +57,9 @@ class _ChatRoomState extends State<ChatRoom> {
                     data['chatroomid'].toString()
                         .replaceAll("_", "")
                         .replaceAll(
-                        Constants.myName, ""),
+                        Constants.myEmail, ""),
                     data['chatroomid'],
+                    "last message"
                 );
               }
             }).toList(),
@@ -74,7 +77,8 @@ class _ChatRoomState extends State<ChatRoom> {
 
   getUserInfo() async {
     Constants.myName = (await HelperFunctions.getUserNameSharedPreference())!;
-    dataBaseMethods.getChatRooms(Constants.myName).then((value){
+    Constants.myEmail = (await HelperFunctions.getUserEmailSharedPreference())!;
+    dataBaseMethods.getChatRooms(Constants.myEmail).then((value){
       setState(() {
         chatRoomsStream = value;
       });
@@ -120,7 +124,8 @@ class _ChatRoomState extends State<ChatRoom> {
 class ChatRoomTile extends StatelessWidget {
   final String userName;
   final String chatRoomId;
-  ChatRoomTile(this.userName,this.chatRoomId);
+  final String lastMessage;
+  ChatRoomTile(this.userName,this.chatRoomId,this.lastMessage);
 
   @override
   Widget build(BuildContext context) {
@@ -132,21 +137,41 @@ class ChatRoomTile extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-        child: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.deepOrangeAccent,
-                borderRadius: BorderRadius.circular(40)
-              ),
-              child: Text(userName.substring(0,1),style: simpleTextStyle(),),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: [
+                  const Color(0xffffcc80),
+                  const Color(0xffe65100)
+              ]
             ),
-            SizedBox(width: 10,),
-            Text(userName,style: simpleTextStyle())
-          ],
+            borderRadius: BorderRadius.circular(25)
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+          child: Column(
+            children: [
+              Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrangeAccent,
+                    borderRadius: BorderRadius.circular(40)
+                  ),
+                  child: Text(userName.substring(0,1),style: simpleTextStyle(),),
+                ),
+                SizedBox(width: 10,),
+                Text(userName,style: simpleTextStyle()),
+              ],
+            ),
+              Container(
+                alignment: Alignment.centerRight,
+                child: Text(lastMessage,style: simpleTextStyle()),
+              )
+            ]
+          ),
         ),
       ),
     );

@@ -41,11 +41,11 @@ class _SearchScreenState extends State<SearchScreen> {
       });
   }
 
-  createChatroomAndStartConversation({required String userName}){
+  createChatroomAndStartConversation({required String userName,required String userEmail}){
 
-    String chatRoomId = getChatRoomId(userName, Constants.myName);
+    String chatRoomId = getChatRoomId(userEmail, Constants.myEmail);
 
-    List<String> users = [userName, Constants.myName];
+    List<String> users = [userEmail, Constants.myEmail];
     Map<String, dynamic> chatRoomMap = {
       "users" : users,
       "chatroomid" : chatRoomId
@@ -73,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Spacer(),
           GestureDetector(
             onTap: () {
-              createChatroomAndStartConversation(userName: userName);
+              createChatroomAndStartConversation(userName: userName,userEmail: userEmail);
             },
             child: Container(
               decoration: BoxDecoration(

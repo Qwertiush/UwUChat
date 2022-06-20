@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uwuchat/helper/helperfunctions.dart';
 import 'package:uwuchat/modul/customUser.dart';
 
@@ -34,6 +35,11 @@ class AuthMethods{
     }catch(e,stacktrace){
       print(e);
       print(stacktrace);
+      if(e is PlatformException) {
+        if(e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+          return null;
+        }
+      }
     }
   }
 

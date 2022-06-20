@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:uwuchat/helper/constants.dart';
 import 'package:uwuchat/services/database.dart';
 import 'package:uwuchat/views/conversation_screen.dart';
@@ -16,10 +17,20 @@ class ConversationScreen extends StatefulWidget {
 
 class _ConversationScreenState extends State<ConversationScreen> {
 
+  final ScrollController _scrollController = ScrollController();
+
   DataBaseMethods dataBaseMethods = DataBaseMethods();
   TextEditingController messageTextEditingController = TextEditingController();
 
   late final Stream<QuerySnapshot> chatMessageStream;
+
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.minScrollExtent,
+      duration: Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 
   Widget ChatMessageList(){
     try {
@@ -45,16 +56,22 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 )
             );
           }
-          return ListView(
-            children: snapshot.data!.docs.map((DocumentSnapshot document) {
-              Map<String, dynamic> data = document.data()! as Map<
-                  String,
-                  dynamic>;
-              return SingleChildScrollView(
-                child: MessageTile(
-                    data['message'], data['sendBy'] == Constants.myName),
-              );
-            }).toList(),
+          SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+            _scrollDown();
+          });
+          return Container(
+            padding: EdgeInsets.only(bottom: 60),
+            child: ListView(
+              reverse: true,
+              controller: _scrollController,
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                Map<String, dynamic> data = document.data()! as Map<
+                    String,
+                    dynamic>;
+                return MessageTile(
+                      data['message'], data['sendBy'] == Constants.myName);
+              }).toList(),
+            ),
           );
         },
       );
@@ -62,8 +79,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   sendMessage(){
-
     if(messageTextEditingController.text.isNotEmpty) {
+      _scrollDown();
       Map<String, dynamic> messageMap = {
         "message" : messageTextEditingController.text,
         "sendBy" : Constants.myName,
@@ -73,6 +90,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
       dataBaseMethods.addConversationMessages(widget.chatRoomId, messageMap);
       messageTextEditingController.text = "";
     }
+  }
+
+  takePhoto(){
+    print("Photo has been taken");
   }
 
   @override
@@ -88,11 +109,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     String whoYouTalkingWith = "";
-    String myChatroomId =  Constants.myName+"_"+Constants.myName;
+    String myChatroomId =  Constants.myEmail+"_"+Constants.myEmail;
     if(widget.chatRoomId == myChatroomId){
       whoYouTalkingWith = "Just You";
     }else{
-      whoYouTalkingWith = widget.chatRoomId.replaceAll("_", "").replaceAll(Constants.myName, "");
+      whoYouTalkingWith = widget.chatRoomId.replaceAll("_", "").replaceAll(Constants.myEmail, "");
     }
     return Scaffold(
       appBar: appBarInConversation(context, whoYouTalkingWith),
@@ -118,7 +139,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           sendMessage();
                         },
                         child: Icon(Icons.send, color: Colors.white,)
-                    )
+                    ),
+                    SizedBox(width: 10,),
+                    GestureDetector(
+                        onTap: () {
+                          takePhoto();
+                        },
+                        child: Icon(Icons.camera_alt, color: Colors.white,)
+                    ),
                   ],
                 ),
               ),
