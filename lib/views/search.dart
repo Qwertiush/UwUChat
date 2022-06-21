@@ -44,16 +44,19 @@ class _SearchScreenState extends State<SearchScreen> {
   createChatroomAndStartConversation({required String userName,required String userEmail}){
 
     String chatRoomId = getChatRoomId(userEmail, Constants.myEmail);
-
+    List<String> usersNames = [userName, Constants.myName];
     List<String> users = [userEmail, Constants.myEmail];
+
     Map<String, dynamic> chatRoomMap = {
       "users" : users,
-      "chatroomid" : chatRoomId
+      "chatroomid" : chatRoomId,
+      'userNames' : usersNames,
+      'lastMessage' : ""
     };
 
     DataBaseMethods().createChatRoom(chatRoomId,chatRoomMap);
     Navigator.push(context, MaterialPageRoute(
-        builder: (context) => ConversationScreen(chatRoomId)
+        builder: (context) => ConversationScreen(chatRoomId,userName)
     ));
   }
 

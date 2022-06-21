@@ -10,6 +10,7 @@ import 'package:uwuchat/services/database.dart';
 import 'package:uwuchat/views/char_room_screen.dart';
 import 'package:uwuchat/views/conversation_screen.dart';
 import 'package:uwuchat/views/search.dart';
+import 'package:uwuchat/views/settings.dart';
 import 'package:uwuchat/views/sign_in.dart';
 import 'package:uwuchat/widgets/widget.dart';
 
@@ -45,21 +46,28 @@ class _ChatRoomState extends State<ChatRoom> {
               Map<String, dynamic> data = document.data()! as Map<
                   String,
                   dynamic>;
+
+              List<dynamic> usersNames = data['userNames'];
+              String chatRoomName = usersNames[0];
+
+              for(int i=0; i < usersNames.length; i++){
+                if(usersNames[i] != Constants.myName){
+                  chatRoomName = usersNames[i];
+                }
+              }
+
               if(data['chatroomid'].toString() == myChatroomId) {
                 return ChatRoomTile(
                     "Just You",
                     data['chatroomid'],
-                    "last message"
+                    data['lastMessage'].toString().length > Constants.maxLengthOfMessageInChatroomView ? data['lastMessage'].toString().substring(0,Constants.maxLengthOfMessageInChatroomView)+"..." : data['lastMessage']
                 );
               }
               else{
                 return ChatRoomTile(
-                    data['chatroomid'].toString()
-                        .replaceAll("_", "")
-                        .replaceAll(
-                        Constants.myEmail, ""),
+                    chatRoomName,
                     data['chatroomid'],
-                    "last message"
+                    data['lastMessage'].toString().length > Constants.maxLengthOfMessageInChatroomView ? data['lastMessage'].toString().substring(0,Constants.maxLengthOfMessageInChatroomView)+"..." : data['lastMessage']
                 );
               }
             }).toList(),
@@ -94,14 +102,14 @@ class _ChatRoomState extends State<ChatRoom> {
         actions: [
           GestureDetector(
             onTap: () {
-              authMethods.signOut();
+    //          authMethods.signOut();
               Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (context) => Authenticate()
+                  builder: (context) => SettingsView()
               ));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.exit_to_app),
+              child: Icon(Icons.settings),
             ),
           )
         ],
@@ -132,7 +140,7 @@ class ChatRoomTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(
-            builder: (context) => ConversationScreen(chatRoomId)
+            builder: (context) => ConversationScreen(chatRoomId,userName)
         ));
       },
       child: Container(

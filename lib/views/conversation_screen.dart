@@ -9,7 +9,8 @@ import 'package:uwuchat/widgets/widget.dart';
 
 class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
-  ConversationScreen(this.chatRoomId);
+  final String whoYouTalkingWith;
+  ConversationScreen(this.chatRoomId,this.whoYouTalkingWith);
 
   @override
   State<ConversationScreen> createState() => _ConversationScreenState();
@@ -78,6 +79,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }catch(e){return loadingWidget(context);}
   }
 
+  updateChatroom(String lastMessage){
+
+    Map<String, dynamic> chatRoomMap = {
+      'lastMessage' : lastMessage
+    };
+
+    DataBaseMethods().updateChatRoom(widget.chatRoomId,chatRoomMap);
+  }
+
   sendMessage(){
     if(messageTextEditingController.text.isNotEmpty) {
       _scrollDown();
@@ -88,6 +98,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
       };
 
       dataBaseMethods.addConversationMessages(widget.chatRoomId, messageMap);
+
+      updateChatroom(messageTextEditingController.text);
+
       messageTextEditingController.text = "";
     }
   }
@@ -108,15 +121,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String whoYouTalkingWith = "";
     String myChatroomId =  Constants.myEmail+"_"+Constants.myEmail;
-    if(widget.chatRoomId == myChatroomId){
-      whoYouTalkingWith = "Just You";
-    }else{
-      whoYouTalkingWith = widget.chatRoomId.replaceAll("_", "").replaceAll(Constants.myEmail, "");
-    }
+
     return Scaffold(
-      appBar: appBarInConversation(context, whoYouTalkingWith),
+      appBar: appBarInConversation(context, widget.chatRoomId == myChatroomId ? "Just You" : widget.whoYouTalkingWith),
       body: Container(
         child: Stack(
           children: [

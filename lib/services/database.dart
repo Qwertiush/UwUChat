@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uwuchat/helper/constants.dart';
 
 class DataBaseMethods{
 
@@ -26,6 +27,11 @@ class DataBaseMethods{
         .doc(chatroomId).set(charRoomMap).catchError((e) {print(e);});
   }
 
+  updateChatRoom(String chatroomId, chatRoomMap){
+    FirebaseFirestore.instance.collection("ChatRoom")
+        .doc(chatroomId).update(chatRoomMap).catchError((e) {print(e);});
+  }
+
   addConversationMessages(String chatRoomId, messageMap){
     FirebaseFirestore.instance.collection("ChatRoom")
         .doc(chatRoomId)
@@ -38,7 +44,7 @@ class DataBaseMethods{
         .doc(chatRoomId)
         .collection("Chat")
         .orderBy("time", descending: true)
-        .limit(25)
+        .limit(Constants.numberOfMessagesToShow)
         .snapshots();
   }
 
